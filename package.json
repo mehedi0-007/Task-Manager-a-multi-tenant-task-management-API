@@ -1,0 +1,31 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/mehedi0-007/Task-Manager-a-multi-tenant-task-management-API#readme",
+  "bugs": {
+    "url": "https://github.com/mehedi0-007/Task-Manager-a-multi-tenant-task-management-API/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehedi0-007/Task-Manager-a-multi-tenant-task-management-API.git"
+  },
+  "license": "ISC",
+  "author": "Mehedi Hassan",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.1.1",
+    "mongoose": "^9.4.1"
+  }
+}
