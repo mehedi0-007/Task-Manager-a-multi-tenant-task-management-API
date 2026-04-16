@@ -1,5 +1,9 @@
-const user = () => {
-    console.log("user ok");
-};
+import {createUser, getUsers} from "../controllers/user.controller.js";
+import express from "express";
 
-export default user;
+const router = express.Router();
+
+router.post("/create", createUser);
+router.get("/getUsers", getUsers)
+
+export default router;
