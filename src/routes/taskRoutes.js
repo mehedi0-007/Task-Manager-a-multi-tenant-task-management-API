@@ -2,17 +2,15 @@ import express from "express";
 
 const router = express.Router();
 
-// router.post("/createTask", createTask);
+// router.post("", createTask);
 
-// router.post("/createManyTask", createManyTask);
+// router.get("", getAllTasks);
 
-// router.get("/getTasks", getAllTasks);
+// router.get("/:id", getTaskbyId);
 
-// router.get("/getTaskbyId/:id", getTaskbyId);
+// router.patch("", updateTask);
 
-// router.put("/updateTask", updateTask);
-
-// router.delete("/deleteTask", deleteTask);
+// router.delete("/:id", deleteTask);
 
 // router.delete("/deleteManyTask", deleteManyTask);
 

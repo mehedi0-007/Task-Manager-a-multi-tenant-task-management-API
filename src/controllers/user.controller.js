@@ -3,6 +3,7 @@ import {
   deleteUserbyIdService,
   getAllUsersService,
   getUserbyIdService,
+  patchUserService,
 } from "../services/user.services.js";
 
 export const createUser = async (req, res) => {
@@ -28,10 +29,25 @@ export const getUserbyId = async (req, res) => {
 
 export const getAllusers = async (req, res) => {
   try {
-    const users = await getAllUsersService();
+    const query = req.query;
+    const users = await getAllUsersService(query);
     res.status(200).send(users);
   } catch {
     res.status(400).json("Not found");
+  }
+};
+
+export const patchUser = async (req, res) => {
+  try {
+    const updatedUser = await patchUserService(req.params.id, req.body);
+
+    res.status(200).json({
+      Updated_User: updatedUser,
+    });
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
   }
 };
 

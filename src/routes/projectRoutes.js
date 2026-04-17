@@ -2,16 +2,14 @@ import express from "express";
 
 const router = express.Router();
 
-// router.post("/createProject", createProject);
+// router.post("", createProject);
 
-// router.get("/getAllProject", getAllProjects);
+// router.get("", getAllProjects);
 
-// router.get("/getProjectbyId/:id", getProjectbyId);
+// router.get("/:id", getProjectbyId);
 
-// router.put("/updateProject", updateProject);
+// router.patch("", updateProject);
 
-// router.delete("/deleteProject", deleteProject);
-
-// router.delete("/deleteManyProject", deleteManyProject);
+// router.delete("/:id", deleteProject);
 
 export default router;

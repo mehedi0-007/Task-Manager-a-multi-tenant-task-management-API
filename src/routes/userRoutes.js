@@ -3,23 +3,20 @@ import {
   getAllusers,
   deleteUserbyId,
   getUserbyId,
+  patchUser,
 } from "../controllers/user.controller.js";
 import express from "express";
 
 const router = express.Router();
 
-router.post("/create", createUser);
+router.post("", createUser);
 
-router.get("/getAllusers", getAllusers);
+router.get("", getAllusers);
 
-router.get("/getUserbyId/:id", getUserbyId);
+router.get("/:id", getUserbyId);
 
-// router.get("/getFilterUsers", getFilterUsers);
+router.patch("/:id", patchUser);
 
-// router.patch("/patchUser/:id", patchUser);
-
-router.delete("/deleteUserbyId/:id", deleteUserbyId);
-
-// router.delete("/deleteManyUser", deleteManyUser);
+router.delete("/:id", deleteUserbyId);
 
 export default router;

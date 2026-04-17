@@ -20,11 +20,16 @@ export const getUserbyIdService = async (userId) => {
   return userData;
 };
 
-export const getAllUsersService = async () => {
-  const users = await user.find();
-  if (users.length < 1) throw new Error("No user found right now");
+export const getAllUsersService = async (query) => {
+  const users = await user.find(query);
+  if (users.length == 0) throw new Error("No user found right now");
 
   return users;
+};
+
+export const patchUserService = async (userId, updateField) => {
+  const updateUser = user.findByIdAndUpdate(userId, updateField, { new: true });
+  return updateUser;
 };
 
 export const deleteUserbyIdService = async (userId) => {
