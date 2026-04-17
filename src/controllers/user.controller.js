@@ -1,12 +1,13 @@
-import user from "../models/user.models.js";
+import {
+  createUserService,
+  deleteUserbyIdService,
+  getAllUsersService,
+  getUserbyIdService,
+} from "../services/user.services.js";
 
 export const createUser = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
-    console.log(req.body);
-    const newUser = new user({ username, email, password, role });
-    await newUser.save();
-
+    await createUserService(req.body);
     res.status(200).json("User Created");
   } catch (err) {
     console.log(err);
@@ -14,12 +15,35 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getUserbyId = async (req, res) => {
   try {
-    const users = await user.find();
-    res.status(200);
-    res.send(users);
+    const userData = await getUserbyIdService(req.params.id);
+    res.status(200).json({ userDetails: userData });
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
+  }
+};
+
+export const getAllusers = async (req, res) => {
+  try {
+    const users = await getAllUsersService();
+    res.status(200).send(users);
   } catch {
     res.status(400).json("Not found");
+  }
+};
+
+export const deleteUserbyId = async (req, res) => {
+  try {
+    await deleteUserbyIdService(req.params.id);
+    res.status(200).json({
+      msg: "User deleted successfully",
+    });
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
   }
 };

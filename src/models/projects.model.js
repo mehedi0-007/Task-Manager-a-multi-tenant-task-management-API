@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
-  projectName: {
+  title: {
     type: String,
     required: true,
   },
-  projectAdmins: [
+  admins: [
     {
       type: mongoose.Schema.ObjectId,
       ref: "user",
     },
   ],
-  projectEmployee: [
+  employees: [
     {
       type: mongoose.Schema.ObjectId,
       ref: "user",

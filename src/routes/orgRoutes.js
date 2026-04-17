@@ -1,5 +1,14 @@
-const user = () => {
-    console.log("user ok");
-};
+import express from "express";
 
-export default user;
+const router = express.Router();
+
+// router.post("/createOrg",createOrg);
+
+// router.get("/getOrg/:id",getOrg);
+
+// router.put("/updateOrg",updateOrg);
+
+// router.delete("/deleteOrg",deleteOrg);
+
+
+export default router;

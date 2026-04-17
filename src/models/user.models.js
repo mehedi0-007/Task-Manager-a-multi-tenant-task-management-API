@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -17,19 +16,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6,
+    select: false,
   },
+
+  org: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Organization",
+  },
+
+  projects: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Project",
+    },
+  ],
 
   role: {
     type: String,
-    enum: ["user", "admin", "owner"],
+    enum: ["user", "admin", "rootAdmin", "owner"],
     default: "user",
   },
-});
-
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-
-  this.password = await bcrypt.hash(this.password, 10);
 });
 
 const user = mongoose.model("User", userSchema);
