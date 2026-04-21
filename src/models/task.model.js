@@ -14,15 +14,12 @@ const taskShema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       required: true,
     },
-    taskEmployee: [
+    assignedEmployee: [
       {
         type: mongoose.Schema.ObjectId,
         ref: "user",
       },
     ],
-    deadline: {
-      type: Date,
-    },
   },
   { timestamps: true },
 );
