@@ -5,6 +5,10 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
   admins: [
     {
       type: mongoose.Schema.ObjectId,
@@ -17,9 +21,16 @@ const projectSchema = new mongoose.Schema({
       ref: "user",
     },
   ],
+  tasks: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "task",
+    },
+  ],
   organization: {
     type: mongoose.Schema.ObjectId,
     ref: "organization",
+    required: true,
   },
 });
 

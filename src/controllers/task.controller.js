@@ -2,9 +2,10 @@ import {
   createTaskService,
   getAllTasksServcie,
   getTaskbyIdService,
-  deleteManyTaskService,
+  deleteTaskService,
   patchTaskService,
-} from "../services/task.services";
+  getAssignedEmployeesService,
+} from "../services/task.services.js";
 
 export const createTask = async (req, res) => {
   try {
@@ -54,10 +55,21 @@ export const patchTask = async (req, res) => {
   }
 };
 
+export const getAssignedEmployees = async (req, res) => {
+  try {
+    const employees = await getAssignedEmployeesService(req.params.id);
+    res.status(200).json(employees);
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
+  }
+};
+
 export const deleteManyTask = async (req, res) => {
   try {
     const allTaskId = req.body;
-    await deleteManyTaskService(allTaskId);
+    await deleteTaskService(allTaskId);
     res.status(200).json("All selected tasks deleted");
   } catch (err) {
     res.status(400).json({

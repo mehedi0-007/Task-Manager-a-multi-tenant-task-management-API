@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema({
 
   org: {
     type: mongoose.Schema.ObjectId,
-    ref: "Organization",
+    ref: "organization",
   },
 
   projects: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "Project",
+      ref: "project",
     },
   ],
 

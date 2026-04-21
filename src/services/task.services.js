@@ -1,9 +1,21 @@
-import Task from "../models/task.model";
-import mongoose from "mongoose";
+import Project from "../models/projects.model.js";
+import Task from "../models/task.model.js";
 
 export const createTaskService = async ({ title, description, project }) => {
   const newTask = new Task({ title, description, project });
   await newTask.save();
+  await Project.findByIdAndUpdate(project, {
+    $push: { tasks: newTask._id },
+  });
+};
+
+export const getAssignedEmployeesService = async (taskId) => {
+  const employees = Task.findById(taskId).populate(
+    "assignedEmployee",
+    "username email role",
+  );
+  if (!employees) throw new Error("No employees found");
+  return employees;
 };
 
 export const getAllTasksServcie = async (query) => {
@@ -26,13 +38,10 @@ export const patchTaskService = async (taskId, updateField) => {
   return newtaskData;
 };
 
-export const deleteManyTaskService = async (allTaskId) => {
-  const taskIds = allTaskId.map((id) => new mongoose.Types.ObjectId(id));
-
-  const result = await Task.deleteMany({
-    _id: {
-      $in: taskIds,
-    },
+export const deleteTaskService = async (taskId) => {
+  const result = await Task.findByIdAndDelete(taskId);
+  await Project.findByIdAndUpdate(result.project, {
+    $pull: { tasks: taskId },
   });
 
   return result.deletedCount;

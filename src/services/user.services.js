@@ -1,6 +1,7 @@
 import { hashPass } from "../utilities/encryptPassword.js";
 import user from "../models/user.models.js";
 import Project from "../models/projects.model.js";
+import Task from "../models/task.model.js";
 
 export const createUserService = async ({ username, email, password }) => {
   const existing = await user.findOne({ email });
@@ -33,26 +34,27 @@ export const patchUserService = async (userId, updateField) => {
 };
 
 export const deleteUserbyIdService = async (userId) => {
-  const existing = await user.findById(userId);
+  const existing = await user.findByIdAndDelete(userId);
   if (!existing) throw new Error("User not found");
 
-  await user.deleteOne({ _id: userId });
-
-  await Project.updateMany(
-    { admins: userId },
-    {
-      $pull: {
-        admins: userId,
+  await Promise.all([
+    Project.updateMany(
+      { $or: [{ admins: userId }, { employees: userId }] },
+      {
+        $pull: {
+          admins: userId,
+          employees: userId,
+        },
       },
-    },
-  );
+    ),
 
-  await Project.updateMany(
-    { employees: userId },
-    {
-      $pull: {
-        employees: userId,
+    Task.updateMany(
+      { assignedEmployee: userId },
+      {
+        $pull: {
+          assignedEmployee: userId,
+        },
       },
-    },
-  );
+    ),
+  ]);
 };
