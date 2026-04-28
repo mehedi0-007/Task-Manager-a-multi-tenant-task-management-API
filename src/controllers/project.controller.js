@@ -5,6 +5,8 @@ import {
   getProjectbyIdService,
   patchProjectService,
   deleteProjectService,
+  getProjectMembersService,
+  assignProjectService,
 } from "../services/project.sercvices.js";
 
 export const createProject = async (req, res) => {
@@ -46,6 +48,28 @@ export const getAllTasks = async (req, res) => {
   try {
     const projectTasks = await getProjectTasksService(req.params.id);
     res.status(200).json(projectTasks);
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
+  }
+};
+
+export const assignProject = async (req, res) => {
+  const role = req.body.role;
+  const userId = req.body.userId;
+  try {
+    await assignProjectService(req.params.id, userId, role);
+    res.status(201).json(`Assinged ${role} to the project successfully`)
+  } catch (err) {
+    res.status(400).json(err.message);
+  }
+};
+
+export const getProjectMembers = async (req, res) => {
+  try {
+    const members = await getProjectMembersService(req.params.id);
+    res.status(200).json(members);
   } catch (err) {
     res.status(400).json({
       error: err.message,

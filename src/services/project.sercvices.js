@@ -2,6 +2,7 @@ import Project from "../models/projects.model.js";
 import Organization from "../models/organization.model.js";
 import Task from "../models/task.model.js";
 import User from "../models/user.models.js";
+import user from "../models/user.models.js";
 
 export const createProjectService = async ({
   title,
@@ -31,13 +32,34 @@ export const getProjectbyIdService = async (projectId) => {
 };
 
 export const getProjectTasksService = async (projectId) => {
-  const allTasks = await Project.findById(projectId).populate(
-    "tasks",
-    "title description",
-  );
+  const allTasks = await Task.find({ project: projectId });
 
   if (!allTasks) throw new Error("No task found for this project");
   return allTasks;
+};
+
+export const assignProjectService = async (projectId, userId, role) => {
+  if (role == "admin") {
+    await Project.findByIdAndUpdate(projectId, {
+      $push: {
+        admins: userId,
+      },
+    });
+  } else {
+    await Project.findByIdAndUpdate(projectId, {
+      $push: {
+        employees: userId,
+      },
+    });
+  }
+};
+
+export const getProjectMembersService = async (projectId) => {
+  const members = await user.find({ projects: projectId });
+
+  if (!members) throw new Error("No member found for this project");
+
+  return members;
 };
 
 export const patchProjectService = async (projectId, updateField) => {

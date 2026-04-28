@@ -9,6 +9,12 @@ export const createTaskService = async ({ title, description, project }) => {
   });
 };
 
+export const assignedEmployeeService = async (taskId, empId) => {
+  await Task.findByIdAndUpdate(taskId, {
+    $push: { assignedEmployee: empId },
+  });
+};
+
 export const getAssignedEmployeesService = async (taskId) => {
   const employees = Task.findById(taskId).populate(
     "assignedEmployee",

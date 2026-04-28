@@ -4,6 +4,7 @@ import {
   getTaskbyIdService,
   deleteTaskService,
   patchTaskService,
+  assignedEmployeeService,
   getAssignedEmployeesService,
 } from "../services/task.services.js";
 
@@ -51,6 +52,17 @@ export const patchTask = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       eroor: err.message,
+    });
+  }
+};
+
+export const assignEmployee = async (req, res) => {
+  try {
+    await assignedEmployeeService(req.params.id, req.body.employeeId);
+    res.status(201).json("Employee assigned to the task successfully");
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
     });
   }
 };
