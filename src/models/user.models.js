@@ -38,6 +38,8 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.index({ email: 1 });
+
 const user = mongoose.model("User", userSchema);
 
 export default user;
