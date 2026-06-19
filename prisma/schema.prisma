@@ -1,0 +1,136 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "cjs"
+  generatedFileExtension = "ts"
+  importFileExtension    = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  user
+  employee
+  admin
+  rootAdmin
+  owner
+}
+
+enum ProjectRole {
+  admin
+  employee
+}
+
+model User {
+  id                   String              @id @default(uuid()) @db.Uuid
+  username             String              @db.VarChar(20)
+  email                String              @unique @db.VarChar(320)
+  password             String
+  role                 UserRole            @default(user)
+  organizationId       String?             @db.Uuid
+  organization         Organization?       @relation("OrganizationUsers", fields: [organizationId], references: [id], onDelete: SetNull)
+  ownedOrganizations   Organization[]      @relation("OrganizationOwner")
+  organizationAdminFor OrganizationAdmin[]
+  projectMemberships   ProjectMember[]
+  taskAssignments      TaskAssignment[]
+  refreshTokens        RefreshToken[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@index([organizationId])
+}
+
+model Organization {
+  id          String              @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  ownerId     String              @db.Uuid
+  owner       User                @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  users       User[]              @relation("OrganizationUsers")
+  rootAdmins  OrganizationAdmin[]
+  projects    Project[]
+  tasks       Task[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([ownerId])
+}
+
+model OrganizationAdmin {
+  organizationId String       @db.Uuid
+  userId         String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@id([organizationId, userId])
+  @@index([userId])
+}
+
+model Project {
+  id             String          @id @default(uuid()) @db.Uuid
+  title          String
+  description    String
+  organizationId String          @db.Uuid
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        ProjectMember[]
+  tasks          Task[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([organizationId])
+}
+
+model ProjectMember {
+  projectId String      @db.Uuid
+  userId    String      @db.Uuid
+  role      ProjectRole
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@id([projectId, userId])
+  @@index([userId])
+}
+
+model Task {
+  id             String           @id @default(uuid()) @db.Uuid
+  title          String
+  description    String
+  projectId      String           @db.Uuid
+  organizationId String           @db.Uuid
+  project        Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignments    TaskAssignment[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([projectId])
+  @@index([organizationId])
+}
+
+model TaskAssignment {
+  taskId     String   @db.Uuid
+  userId     String   @db.Uuid
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([taskId, userId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@index([userId])
+}

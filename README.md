@@ -1,82 +1,76 @@
 # Task Manager API
 
-A robust backend REST API for managing tasks, projects, organizations, and users. This project provides structural foundations for team collaboration and task organization.
+A multi-tenant REST API built with NestJS, TypeScript, PostgreSQL, Prisma ORM, and JWT authentication.
 
-**Note:** This is an ongoing project. Many features are currently in development or planned for future releases.
+## Requirements
 
-## 🚀 Current Features
+- Node.js
+- PostgreSQL
 
-- **Authentication:** Secure user registration and login using JWT (JSON Web Tokens) and refresh tokens. Password encryption is implemented for security.
-- **User Management:** Create and manage user profiles.
-- **Organization Management:** Group users and projects under specific organizations.
-- **Project Management:** Create and manage distinct projects within organizations.
-- **Task Management:** Create, update, and track tasks associated with projects and users.
+## Setup
 
-## 🚧 Upcoming Features (Work In Progress)
-
-- Advanced Role-Based Access Control (RBAC) (Admin, Manager, Member).
-- Detailed task assignment, statuses, and progress tracking.
-- Due dates and reminders.
-- Robust input validation and error handling.
-- Real-time notifications for task updates.
-- API Documentation (Swagger/OpenAPI).
-
-## 🛠️ Tech Stack
-
-- **Runtime:** Node.js
-- **Architecture:** Controller-Service-Model pattern
-- **Authentication:** JWT (JSON Web Tokens)
-- **Database:** (Configured via `src/config/db.js` - e.g., MongoDB/Mongoose or PostgreSQL)
-
-## 📁 Project Structure
-
-```text
-src/
-├── config/        # Database and JWT configurations
-├── controllers/   # Request handlers for auth, orgs, projects, tasks, and users
-├── middlewares/   # Custom middlewares (e.g., authentication)
-├── models/        # Database schemas/models
-├── routes/        # API route definitions
-├── services/      # Business logic corresponding to controllers
-└── utilities/     # Helper functions (e.g., password encryption)
+```bash
+npm install
+npm run prisma:migrate -- --name init
+npm run start:dev
 ```
 
-## 💻 Getting Started
+Edit `.env` before starting. Its default local connection is:
 
-### Prerequisites
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/task_manager?schema=public"
+```
 
-- Node.js installed on your machine.
-- Database connection URI (e.g., MongoDB).
+Change the username, password, host, port, or database name to match your PostgreSQL installation. The database itself must exist before running the migration.
 
-### Installation
+## Commands
 
-1. Clone the repository:
+```bash
+npm run build             # Generate Prisma Client and compile NestJS
+npm run start:dev         # Development server with watch mode
+npm run lint              # Type-aware ESLint checks
+npm test                  # Unit tests
+npm run prisma:generate   # Regenerate the typed Prisma Client
+npm run prisma:migrate    # Create/apply a development migration
+npm run prisma:deploy     # Apply existing migrations in production
+npm run prisma:studio     # Open Prisma's database browser
+```
 
-   ```bash
-   git clone <repository-url>
-   ```
+## Data model
 
-2. Navigate into the project directory:
+The Prisma schema is at `prisma/schema.prisma`. It uses PostgreSQL UUID primary keys and relational foreign keys.
 
-   ```bash
-   cd "Task Manager"
-   ```
+- Organizations have one owner, users, root administrators, projects, and tasks.
+- Project membership is stored in `ProjectMember` with an `admin` or `employee` role.
+- Task assignment is stored in `TaskAssignment`.
+- Refresh tokens belong to users and expire at a stored timestamp.
+- Deleting an organization cascades to its projects, tasks, memberships, and assignments while preserving users with a null organization.
+- Deleting a project cascades to its tasks, memberships, and assignments.
+- Organization owners must transfer ownership before their user account can be deleted.
 
-3. Install dependencies:
+## API
 
-   ```bash
-   npm install
-   ```
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/users` | Register a user |
+| GET/PATCH/DELETE | `/users/:id` | Read, update, or delete a user |
+| POST | `/auth/login` | Get access and refresh tokens |
+| POST | `/auth/refresh` | Rotate a refresh token |
+| POST | `/auth/logout` | Revoke a refresh token |
+| POST | `/org/createOrg` | Create an organization |
+| GET | `/org/getOrg/:id` | Read an organization |
+| PUT | `/org/updateOrg/:id` | Update an organization |
+| DELETE | `/org/deleteOrg/:id` | Delete an organization |
+| POST/GET | `/project` | Create or list projects |
+| GET/PATCH/DELETE | `/project/:id` | Read, update, or delete a project |
+| POST | `/project/:id/assign` | Assign a project admin or employee |
+| GET | `/project/:id/members` | List project memberships |
+| GET | `/project/:id/tasks` | List project tasks |
+| POST/GET | `/task` | Create or list tasks |
+| GET/PATCH/DELETE | `/task/:id` | Read, update, or delete a task |
+| POST | `/task/:id/assign` | Assign a project member to a task |
+| GET | `/task/:id/employees` | Read a task with its assignees |
 
-4. Set up environment variables:
-   Create a `.env` file in the root directory and add your configurations (e.g., `PORT`, Database URI, `JWT_SECRET`).
+All route IDs are UUIDs. Collection endpoints support equality filters for their exposed fields, such as `GET /task?project=<uuid>`.
 
-5. Start the development server:
-   ```bash
-   npm start
-   # or your specific run command based on package.json, e.g., npm run dev
-   ```
-
-## 🤝 Contributing
-
-Since this is an active project, contributions, suggestions, and feature requests are welcome! Feel free to open issues or submit pull requests.
+Access tokens use `Authorization: Bearer <token>`. `JwtAuthGuard` and the `CurrentUser` decorator are available under `src/common` for protecting controllers or individual handlers.
